@@ -1,6 +1,7 @@
 import { useNavigate } from 'react-router-dom';
 import { Camera, Activity, TrendingUp, Zap } from 'lucide-react';
 import { motion } from 'framer-motion';
+import type { Variants } from 'framer-motion';
 import { AreaChart, Area, ResponsiveContainer, Tooltip } from 'recharts';
 
 // Mock Data for Graphs
@@ -30,7 +31,7 @@ const TISSUE_DATA = [
 export default function Home() {
     const navigate = useNavigate();
 
-    const variants = {
+    const variants: Variants = {
         hidden: { opacity: 0, y: 20 },
         visible: (i: number) => ({
             opacity: 1,
@@ -59,7 +60,7 @@ export default function Home() {
                         custom={0}
                         initial="hidden"
                         animate="visible"
-                        variants={variants as any}
+                        variants={variants}
                         className="lg:col-span-1 rounded-[2.5rem] bg-glass-dark relative overflow-hidden p-10 flex flex-col justify-end border border-white/5 hover:border-primary/30 transition-all duration-500 shadow-2xl group"
                     >
                         {/* Shimmer Effect */}
@@ -99,7 +100,7 @@ export default function Home() {
                             custom={1}
                             initial="hidden"
                             animate="visible"
-                            variants={variants as any}
+                            variants={variants}
                             onClick={() => navigate('/capture')}
                             className="group rounded-[2.5rem] bg-glass-dark p-8 relative overflow-hidden cursor-pointer hover:bg-white/5 transition-all duration-300 border border-white/5 hover:border-primary/50"
                         >
@@ -123,7 +124,7 @@ export default function Home() {
                             custom={2}
                             initial="hidden"
                             animate="visible"
-                            variants={variants as any}
+                            variants={variants}
                             className="rounded-[2.5rem] bg-glass-dark p-8 relative overflow-hidden border border-white/5 hover:border-white/10 transition-colors"
                         >
                             <div className="absolute top-6 right-6 p-3 bg-accent/20 rounded-2xl text-accent-foreground border border-accent/20">
@@ -143,7 +144,7 @@ export default function Home() {
                             custom={3}
                             initial="hidden"
                             animate="visible"
-                            variants={variants as any}
+                            variants={variants}
                             className="rounded-[2.5rem] bg-glass-dark p-8 relative overflow-hidden border border-white/5 hover:border-white/10 transition-colors"
                         >
                             <div className="flex flex-col h-full justify-between">
@@ -170,7 +171,7 @@ export default function Home() {
                             custom={4}
                             initial="hidden"
                             animate="visible"
-                            variants={variants as any}
+                            variants={variants}
                             className="rounded-[2.5rem] bg-glass-dark p-8 relative overflow-hidden border border-white/5 hover:border-white/10 transition-colors"
                         >
                             <span className="text-slate-400 text-lg font-medium block mb-4">Baseline Var.</span>
@@ -191,7 +192,7 @@ export default function Home() {
                         custom={5}
                         initial="hidden"
                         animate="visible"
-                        variants={variants as any}
+                        variants={variants}
                         className="rounded-[2.5rem] bg-glass-dark p-8 border border-white/5 relative overflow-hidden group"
                     >
                         <div className="absolute top-0 right-0 p-32 bg-primary/5 blur-[100px] rounded-full pointer-events-none group-hover:bg-primary/10 transition-colors"></div>
@@ -236,7 +237,7 @@ export default function Home() {
                         custom={6}
                         initial="hidden"
                         animate="visible"
-                        variants={variants as any}
+                        variants={variants}
                         className="rounded-[2.5rem] bg-glass-dark p-8 border border-white/5 relative overflow-hidden"
                     >
                         <div className="flex justify-between items-center mb-6 relative z-10">
