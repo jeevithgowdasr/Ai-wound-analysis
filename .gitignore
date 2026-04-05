@@ -20,3 +20,10 @@ dist-ssr/
 # OS
 .DS_Store
 Thumbs.db
+# Data
+data/
+datasets/
+models/*.pth
+models/*.h5
+models/*.bin
+models/*.onnx
