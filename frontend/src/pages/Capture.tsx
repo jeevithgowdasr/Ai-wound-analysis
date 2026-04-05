@@ -1,5 +1,5 @@
 import { useState, useRef } from 'react';
-import { Camera, AlertTriangle, ArrowLeft, Zap } from 'lucide-react';
+import { Camera, AlertTriangle, ArrowLeft, Zap, ShieldCheck } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import { analyzeWound } from '../services/api';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -25,76 +25,92 @@ export default function Capture() {
             const result = await analyzeWound(file);
             // Artificial delay to show off the scanning animation
             setTimeout(() => {
-                navigate('/dashboard', { state: { latestResult: result } });
-            }, 3000);
+                navigate('/dashboard', { state: { analysisData: result } });
+            }, 3500);
         } catch (err) {
             console.error(err);
-            setError("Analysis failed. Please rescind capture.");
+            setError("Analysis failed. Please rescant capture.");
             setLoading(false);
         }
     };
 
     return (
-        <div className="flex min-h-screen flex-col bg-aurora-subtle text-cyan-50 font-mono relative overflow-hidden">
-
+        <div className="flex min-h-screen flex-col bg-aurora-subtle font-plus-jakarta text-slate-100 relative overflow-hidden">
+            {/* Mesh Background */}
+            <div className="absolute inset-0 bg-mesh opacity-40 mix-blend-soft-light pointer-events-none"></div>
+            
             {/* HUD Grid Overlay */}
-            <div className="absolute inset-0 z-0 pointer-events-none opacity-20"
-                style={{ backgroundImage: 'linear-gradient(rgba(0, 255, 255, 0.1) 1px, transparent 1px), linear-gradient(90deg, rgba(0, 255, 255, 0.1) 1px, transparent 1px)', backgroundSize: '40px 40px' }}>
+            <div className="absolute inset-0 z-0 pointer-events-none opacity-10"
+                style={{ backgroundImage: 'linear-gradient(rgba(16, 185, 129, 0.1) 1px, transparent 1px), linear-gradient(90deg, rgba(16, 185, 129, 0.1) 1px, transparent 1px)', backgroundSize: '60px 60px' }}>
             </div>
 
             {/* Header */}
-            <div className="relative z-10 flex items-center justify-between p-6 border-b border-cyan-900/50 bg-black/60 backdrop-blur-md">
-                <Link to="/" className="flex items-center gap-2 text-cyan-400 hover:text-cyan-300 transition-colors">
-                    <ArrowLeft className="h-5 w-5" />
-                    <span className="text-sm tracking-widest uppercase">Abort</span>
+            <header className="relative z-10 flex items-center justify-between px-8 py-6 bg-black/20 backdrop-blur-xl border-b border-white/5">
+                <Link to="/" className="flex items-center gap-3 text-slate-400 hover:text-primary transition-all group" aria-label="Abort and go back home">
+                    <div className="p-2 rounded-xl bg-white/5 group-hover:bg-primary/20 group-hover:text-primary transition-colors">
+                        <ArrowLeft className="h-5 w-5" />
+                    </div>
+                    <span className="text-sm font-bold tracking-[0.2em] uppercase">Abort</span>
                 </Link>
-                <div className="flex items-center gap-2 text-cyan-500">
-                    <div className="h-2 w-2 rounded-full bg-cyan-500 animate-pulse"></div>
-                    <span className="text-xs uppercase tracking-[0.2em] font-bold">System Ready</span>
+                <div className="flex items-center gap-4 bg-glass-dark px-5 py-2.5 rounded-2xl border border-white/5 shadow-2xl">
+                    <div className="flex items-center gap-2.5">
+                        <div className="h-2 w-2 rounded-full bg-primary animate-pulse shadow-[0_0_10px_rgba(16,185,129,0.8)]"></div>
+                        <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary">System Online</span>
+                    </div>
+                    <div className="h-4 w-px bg-white/10"></div>
+                    <div className="flex items-center gap-2">
+                        <ShieldCheck className="h-3.5 w-3.5 text-slate-400" />
+                        <span className="text-[10px] font-bold uppercase tracking-widest text-slate-400">Encrypted</span>
+                    </div>
                 </div>
-            </div>
+            </header>
 
-            <main className="flex-1 flex flex-col items-center justify-center p-6 relative z-10">
-
+            <main className="flex-1 flex flex-col items-center justify-center p-8 relative z-10">
                 <AnimatePresence mode="wait">
                     {!preview ? (
                         <motion.div
-                            initial={{ scale: 0.9, opacity: 0 }}
+                            initial={{ scale: 0.95, opacity: 0 }}
                             animate={{ scale: 1, opacity: 1 }}
-                            exit={{ scale: 1.1, opacity: 0 }}
+                            exit={{ scale: 1.05, opacity: 0 }}
                             role="button"
                             tabIndex={0}
-                            aria-label="Click to scan or upload wound image"
-                            className="w-full max-w-md aspect-[3/4] rounded-3xl border-2 border-dashed border-cyan-800 bg-cyan-950/20 relative flex flex-col items-center justify-center gap-6 overflow-hidden group cursor-pointer"
+                            aria-label="Initiate wound scan"
+                            className="w-full max-w-lg aspect-[4/5] rounded-[3rem] bg-glass-dark border border-white/5 relative flex flex-col items-center justify-center gap-8 overflow-hidden group cursor-pointer hover:border-primary/30 transition-all duration-700 shadow-3xl"
                             onClick={() => fileInputRef.current?.click()}
                             onKeyDown={(e) => { if(e.key === 'Enter' || e.key === ' ') fileInputRef.current?.click(); }}
                         >
-                            {/* Animated Scanner Reticle */}
-                            <div className="absolute inset-4 border border-cyan-500/30 rounded-2xl">
-                                <div className="absolute top-0 left-0 h-4 w-4 border-t-2 border-l-2 border-cyan-400"></div>
-                                <div className="absolute top-0 right-0 h-4 w-4 border-t-2 border-r-2 border-cyan-400"></div>
-                                <div className="absolute bottom-0 left-0 h-4 w-4 border-b-2 border-l-2 border-cyan-400"></div>
-                                <div className="absolute bottom-0 right-0 h-4 w-4 border-b-2 border-r-2 border-cyan-400"></div>
+                            {/* Scanning Reticles */}
+                            <div className="absolute inset-10 pointer-events-none transition-transform duration-700 group-hover:scale-95">
+                                <div className="absolute top-0 left-0 h-10 w-10 border-t-2 border-l-2 border-primary/40 rounded-tl-3xl"></div>
+                                <div className="absolute top-0 right-0 h-10 w-10 border-t-2 border-r-2 border-primary/40 rounded-tr-3xl"></div>
+                                <div className="absolute bottom-0 left-0 h-10 w-10 border-b-2 border-l-2 border-primary/40 rounded-bl-3xl"></div>
+                                <div className="absolute bottom-0 right-0 h-10 w-10 border-b-2 border-r-2 border-primary/40 rounded-br-3xl"></div>
                             </div>
 
-                            <motion.div
-                                animate={{ y: [0, -10, 0] }}
-                                transition={{ repeat: Infinity, duration: 2 }}
-                                className="relative z-10"
-                            >
-                                <div className="h-20 w-20 rounded-full bg-cyan-500/10 flex items-center justify-center border border-cyan-500/50 shadow-[0_0_30px_rgba(6,182,212,0.3)] group-hover:shadow-[0_0_50px_rgba(6,182,212,0.6)] transition-all duration-500">
-                                    <Camera className="h-8 w-8 text-cyan-300" />
+                            <div className="relative z-10 space-y-8 flex flex-col items-center">
+                                <motion.div
+                                    animate={{ 
+                                        y: [0, -15, 0],
+                                        boxShadow: ["0 0 40px rgba(16,185,129,0.1)", "0 0 80px rgba(16,185,129,0.3)", "0 0 40px rgba(16,185,129,0.1)"]
+                                    }}
+                                    transition={{ repeat: Infinity, duration: 3, ease: "easeInOut" }}
+                                    className="h-32 w-32 rounded-[2.5rem] bg-primary/10 flex items-center justify-center border border-primary/20 relative"
+                                >
+                                    <div className="absolute inset-0 rounded-[2.5rem] bg-primary/5 animate-ping opacity-20"></div>
+                                    <Camera className="h-12 w-12 text-primary" strokeWidth={1.5} />
+                                </motion.div>
+
+                                <div className="text-center space-y-4">
+                                    <h2 className="text-3xl font-black tracking-tighter text-white">INITIATE SCAN</h2>
+                                    <p className="text-slate-400 max-w-[280px] mx-auto text-sm leading-relaxed font-medium uppercase tracking-widest opacity-60">
+                                        Secure AI analysis protocol ready. Align within frame.
+                                    </p>
                                 </div>
-                            </motion.div>
-
-                            <div className="text-center space-y-2 z-10">
-                                <h2 className="text-xl font-bold tracking-wider text-white">INITIATE SCAN</h2>
-                                <p className="text-xs text-cyan-400/70 max-w-[200px] mx-auto uppercase tracking-wide">
-                                    Align wound within reticle. AI autofocals enabled.
-                                </p>
                             </div>
 
-                            <div className="absolute bottom-0 left-0 w-full h-1/2 bg-gradient-to-t from-cyan-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                            {/* HUD Ambient Details */}
+                            <div className="absolute bottom-10 left-10 text-[10px] font-black text-primary/40 tracking-[0.4em] uppercase">Auth: v4.2</div>
+                            <div className="absolute bottom-10 right-10 text-[10px] font-black text-primary/40 tracking-[0.4em] uppercase">FRM: 60fps</div>
 
                             <input
                                 ref={fileInputRef}
@@ -107,35 +123,44 @@ export default function Capture() {
                         </motion.div>
                     ) : (
                         <motion.div
-                            initial={{ opacity: 0 }}
-                            animate={{ opacity: 1 }}
-                            className="relative w-full max-w-md aspect-[3/4] rounded-3xl overflow-hidden shadow-2xl border-2 border-cyan-500/50"
+                            initial={{ opacity: 0, scale: 0.95 }}
+                            animate={{ opacity: 1, scale: 1 }}
+                            className="relative w-full max-w-lg aspect-[4/5] rounded-[3rem] overflow-hidden shadow-edge border border-white/10"
                         >
-                            <img src={preview} alt="Analysis Target" className="w-full h-full object-cover filter contrast-125" />
+                            <img src={preview} alt="Target Bio-Data" className="w-full h-full object-cover grayscale brightness-75 contrast-125" />
 
-                            {/* Scanning Overlay */}
+                            {/* Scanning Visuals */}
                             {loading && (
-                                <div className="absolute inset-0 pointer-events-none">
-                                    <div className="absolute inset-0 bg-cyan-500/10 mix-blend-overlay"></div>
+                                <div className="absolute inset-0">
+                                    <div className="absolute inset-0 bg-primary/5 backdrop-contrast-125"></div>
+                                    
+                                    {/* Scan Line */}
                                     <motion.div
-                                        initial={{ top: "0%" }}
-                                        animate={{ top: "100%" }}
-                                        transition={{ repeat: Infinity, duration: 2, ease: "linear" }}
-                                        className="absolute left-0 right-0 h-1 bg-cyan-400 shadow-[0_0_20px_rgba(34,211,238,1)] z-20"
+                                        initial={{ top: "-10%" }}
+                                        animate={{ top: "110%" }}
+                                        transition={{ repeat: Infinity, duration: 2.5, ease: "linear" }}
+                                        className="absolute left-0 right-0 h-[2px] bg-primary shadow-[0_0_30px_#10b981,0_0_60px_#10b981] z-30"
                                     />
 
-                                    <div className="absolute top-4 left-4 font-mono text-xs text-cyan-300 space-y-1">
-                                        <div className="flex items-center gap-2">
-                                            <Zap className="h-3 w-3 animate-pulse" />
-                                            <span>ANALYZING TISSUE MATRIX...</span>
+                                    {/* Data Stream */}
+                                    <div className="absolute top-8 left-8 space-y-3 z-30">
+                                        <div className="flex items-center gap-3 bg-black/40 backdrop-blur-md border border-primary/20 px-4 py-2 rounded-xl">
+                                            <Zap className="h-4 w-4 text-primary animate-pulse" />
+                                            <span className="text-[10px] font-black text-white uppercase tracking-[0.2em]">Neural Processing...</span>
                                         </div>
-                                        <div className="text-cyan-500/80">SEGMENTATION: PENDING</div>
-                                        <div className="text-cyan-500/80">MORPHOMETRY: PENDING</div>
                                     </div>
 
-                                    <div className="absolute bottom-8 left-0 right-0 text-center">
-                                        <div className="inline-block bg-black/70 backdrop-blur-md px-4 py-2 rounded-full border border-cyan-500/30 text-cyan-400 text-xs font-bold tracking-widest animate-pulse">
-                                            PROCESSING DATA...
+                                    {/* HUD Overlays */}
+                                    <div className="absolute inset-0 pointer-events-none border-[20px] border-black/40 mix-blend-overlay"></div>
+                                    
+                                    <div className="absolute bottom-12 left-0 right-0 flex justify-center z-30">
+                                        <div className="bg-glass-dark px-8 py-4 rounded-3xl border border-white/10 shadow-3xl text-center">
+                                            <div className="flex items-center gap-3 justify-center">
+                                                <div className="flex gap-1">
+                                                    {[1,2,3].map(i => <div key={i} className="h-1 w-4 bg-primary rounded-full animate-pulse" style={{ animationDelay: `${i*0.2}s` }}></div>)}
+                                                </div>
+                                                <span className="text-[11px] font-black text-white uppercase tracking-[0.3em] inline-block mt-0.5">Calculating Metrics</span>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -148,21 +173,27 @@ export default function Capture() {
                     <motion.div
                         initial={{ y: 20, opacity: 0 }}
                         animate={{ y: 0, opacity: 1 }}
-                        className="mt-6 flex items-center gap-3 bg-red-500/10 border border-red-500/50 text-red-400 px-6 py-4 rounded-xl backdrop-blur-md"
+                        className="mt-8 flex items-center gap-4 bg-red-500/10 border border-red-500/20 text-red-400 px-8 py-5 rounded-2xl backdrop-blur-xl shadow-2xl"
                     >
-                        <AlertTriangle className="h-5 w-5" />
-                        <span className="text-sm font-bold tracking-wide">{error}</span>
+                        <div className="p-2 bg-red-500/20 rounded-xl">
+                            <AlertTriangle className="h-5 w-5" />
+                        </div>
+                        <span className="text-sm font-bold uppercase tracking-widest">{error}</span>
                     </motion.div>
                 )}
-
             </main>
 
-            {/* Footer Metrics Simulation */}
-            <div className="p-4 border-t border-cyan-900/30 bg-black/80 backdrop-blur text-[10px] text-cyan-800 flex justify-between uppercase tracking-widest font-mono">
-                <span>COORD: 34.052, -118.243</span>
-                <span>ISO: AUTO</span>
-                <span>AI MODEL: v4.2.0</span>
-            </div>
+            {/* Footer Telemetry */}
+            <footer className="relative z-10 px-10 py-6 bg-black/20 border-t border-white/5 backdrop-blur-xl flex justify-between items-center text-[9px] font-black uppercase tracking-[0.4em] text-slate-500">
+                <div className="flex gap-8">
+                    <span>GEO: 34.05 / 118.24</span>
+                    <span>OP: HUD_v4</span>
+                </div>
+                <div className="flex gap-2 items-center">
+                    <div className="h-1.5 w-1.5 rounded-full bg-slate-500 opacity-30"></div>
+                    <span>Secure Link Established</span>
+                </div>
+            </footer>
         </div>
     );
 }
