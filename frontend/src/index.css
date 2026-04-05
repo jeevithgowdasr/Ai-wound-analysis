@@ -106,6 +106,7 @@
 /* Global Utilities */
 .glass {
   background: rgba(255, 255, 255, 0.03);
+  -webkit-backdrop-filter: blur(10px);
   backdrop-filter: blur(10px);
   border: 1px solid rgba(255, 255, 255, 0.08);
 }
@@ -113,6 +114,7 @@
 .glass-dark {
   background: rgba(15, 15, 20, 0.5);
   /* Deep tint */
+  -webkit-backdrop-filter: blur(16px);
   backdrop-filter: blur(16px);
   border: 1px solid rgba(255, 255, 255, 0.05);
   box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
