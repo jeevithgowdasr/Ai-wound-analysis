@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # WoundSense AI
 
 **Automated Wound Monitoring & Analytics Platform**
@@ -18,3 +19,6 @@ WoundSense AI is a digital health proof-of-concept designed to assist patients a
 
 ## Getting Started
 *This repository is currently in the initial design and architecture phase.*
+=======
+# Ai-wound-analysis
+>>>>>>> 41b95da2dda5cf2457ca60ab9537a06ca5b73be1
