@@ -62,8 +62,12 @@ export default function Capture() {
                             initial={{ scale: 0.9, opacity: 0 }}
                             animate={{ scale: 1, opacity: 1 }}
                             exit={{ scale: 1.1, opacity: 0 }}
+                            role="button"
+                            tabIndex={0}
+                            aria-label="Click to scan or upload wound image"
                             className="w-full max-w-md aspect-[3/4] rounded-3xl border-2 border-dashed border-cyan-800 bg-cyan-950/20 relative flex flex-col items-center justify-center gap-6 overflow-hidden group cursor-pointer"
                             onClick={() => fileInputRef.current?.click()}
+                            onKeyDown={(e) => { if(e.key === 'Enter' || e.key === ' ') fileInputRef.current?.click(); }}
                         >
                             {/* Animated Scanner Reticle */}
                             <div className="absolute inset-4 border border-cyan-500/30 rounded-2xl">
