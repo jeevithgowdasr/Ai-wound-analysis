@@ -41,12 +41,13 @@ export default function Home() {
                 ease: "easeOut"
             }
         })
-    } as any;
+    };
 
     return (
         <div className="min-h-screen bg-aurora-deep text-foreground p-4 md:p-8 font-sans overflow-hidden relative">
-            {/* Noise Texture Overlay */}
-            <div className="absolute inset-0 z-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20 brightness-100 contrast-150 mix-blend-overlay pointer-events-none fixed"></div>
+            {/* Background Texture & Gradients */}
+            <div className="absolute inset-0 z-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20 filter brightness-100 contrast-150 mix-blend-overlay fixed"></div>
+            <div className="absolute inset-0 z-0 bg-mesh pointer-events-none"></div>
 
             <div className="relative z-10 max-w-7xl mx-auto space-y-6 h-full flex flex-col">
 
@@ -58,22 +59,31 @@ export default function Home() {
                         custom={0}
                         initial="hidden"
                         animate="visible"
-                        variants={variants}
-                        className="lg:col-span-1 rounded-[2.5rem] bg-glass-dark relative overflow-hidden p-10 flex flex-col justify-end border border-white/5 hover:border-primary/30 transition-colors duration-500"
+                        variants={variants as any}
+                        className="lg:col-span-1 rounded-[2.5rem] bg-glass-dark relative overflow-hidden p-10 flex flex-col justify-end border border-white/5 hover:border-primary/30 transition-all duration-500 shadow-2xl group"
                     >
+                        {/* Shimmer Effect */}
+                        <div className="absolute inset-0 shimmer opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                        
                         {/* Background Abstract Shapes */}
-                        <div className="absolute top-[-50px] left-[-50px] w-64 h-64 bg-secondary rounded-full mix-blend-screen filter blur-[80px] opacity-40 animate-blob"></div>
-                        <div className="absolute top-[20%] right-[-20%] w-72 h-72 bg-primary rounded-full mix-blend-screen filter blur-[80px] opacity-30 animate-blob animation-delay-2000"></div>
+                        <div className="absolute top-[-50px] left-[-50px] w-64 h-64 bg-secondary/20 rounded-full filter blur-[80px] animate-blob"></div>
+                        <div className="absolute top-[20%] right-[-20%] w-72 h-72 bg-primary/20 rounded-full filter blur-[80px] animate-blob animation-delay-2000"></div>
 
-                        {/* 3D Visual Placeholder - Holographic Heart */}
+                        {/* 3D Visual Placeholder - Holographic Heart/Pulse */}
                         <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-[60%] w-48 h-48">
-                            <div className="w-full h-full rounded-full bg-gradient-to-tr from-accent via-primary to-cyan-300 blur-xl opacity-60 animate-pulse"></div>
-                            <div className="absolute inset-4 rounded-full bg-gradient-to-br from-white/10 to-transparent backdrop-blur-md shadow-inner border border-white/20"></div>
+                            <motion.div 
+                                animate={{ scale: [1, 1.1, 1], rotate: [0, 5, 0] }}
+                                transition={{ repeat: Infinity, duration: 4 }}
+                                className="w-full h-full rounded-full bg-gradient-to-tr from-accent/30 via-primary/30 to-cyan-300/30 blur-2xl opacity-60"
+                            ></motion.div>
+                            <div className="absolute inset-4 rounded-full bg-glass backdrop-blur-3xl shadow-inner border border-white/10 flex items-center justify-center">
+                                <Activity className="h-16 w-16 text-primary animate-pulse" />
+                            </div>
                         </div>
 
                         <div className="relative z-10 space-y-2 mt-auto">
                             <h1 className="text-5xl font-extralight text-white/90 tracking-tight">
-                                Hi, <span className="font-bold text-transparent bg-clip-text bg-gradient-to-r from-cyan-300 to-blue-500">Alex!</span>
+                                Hi, <span className="font-bold text-gradient">Alex!</span>
                             </h1>
                             <h2 className="text-2xl font-light text-slate-400 leading-tight">
                                 Your healing trajectory is <span className="text-primary font-medium">positive</span>.
@@ -89,7 +99,7 @@ export default function Home() {
                             custom={1}
                             initial="hidden"
                             animate="visible"
-                            variants={variants}
+                            variants={variants as any}
                             onClick={() => navigate('/capture')}
                             className="group rounded-[2.5rem] bg-glass-dark p-8 relative overflow-hidden cursor-pointer hover:bg-white/5 transition-all duration-300 border border-white/5 hover:border-primary/50"
                         >
@@ -113,7 +123,7 @@ export default function Home() {
                             custom={2}
                             initial="hidden"
                             animate="visible"
-                            variants={variants}
+                            variants={variants as any}
                             className="rounded-[2.5rem] bg-glass-dark p-8 relative overflow-hidden border border-white/5 hover:border-white/10 transition-colors"
                         >
                             <div className="absolute top-6 right-6 p-3 bg-accent/20 rounded-2xl text-accent-foreground border border-accent/20">
@@ -133,7 +143,7 @@ export default function Home() {
                             custom={3}
                             initial="hidden"
                             animate="visible"
-                            variants={variants}
+                            variants={variants as any}
                             className="rounded-[2.5rem] bg-glass-dark p-8 relative overflow-hidden border border-white/5 hover:border-white/10 transition-colors"
                         >
                             <div className="flex flex-col h-full justify-between">
@@ -160,7 +170,7 @@ export default function Home() {
                             custom={4}
                             initial="hidden"
                             animate="visible"
-                            variants={variants}
+                            variants={variants as any}
                             className="rounded-[2.5rem] bg-glass-dark p-8 relative overflow-hidden border border-white/5 hover:border-white/10 transition-colors"
                         >
                             <span className="text-slate-400 text-lg font-medium block mb-4">Baseline Var.</span>
@@ -181,7 +191,7 @@ export default function Home() {
                         custom={5}
                         initial="hidden"
                         animate="visible"
-                        variants={variants}
+                        variants={variants as any}
                         className="rounded-[2.5rem] bg-glass-dark p-8 border border-white/5 relative overflow-hidden group"
                     >
                         <div className="absolute top-0 right-0 p-32 bg-primary/5 blur-[100px] rounded-full pointer-events-none group-hover:bg-primary/10 transition-colors"></div>
@@ -226,7 +236,7 @@ export default function Home() {
                         custom={6}
                         initial="hidden"
                         animate="visible"
-                        variants={variants}
+                        variants={variants as any}
                         className="rounded-[2.5rem] bg-glass-dark p-8 border border-white/5 relative overflow-hidden"
                     >
                         <div className="flex justify-between items-center mb-6 relative z-10">

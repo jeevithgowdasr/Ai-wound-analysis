@@ -1,242 +1,253 @@
-
-
-import { useLocation, Link } from 'react-router-dom';
-import { ArrowLeft, CheckCircle, Activity, Calendar, FileText, Share2 } from 'lucide-react';
-import { XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Area, AreaChart } from 'recharts';
-
-import type { AnalysisResponse } from '../services/api';
-import ReactMarkdown from 'react-markdown';
 import { motion } from 'framer-motion';
-
-// Mock History Data for Graph
-const MOCK_HISTORY = [
-    { date: '10/01', area: 12.5 },
-    { date: '10/08', area: 11.2 },
-    { date: '10/15', area: 9.8 },
-    { date: '10/22', area: 8.5 },
-    { date: '10/29', area: 7.9 },
-    { date: '11/05', area: 5.5 },
-    { date: '11/12', area: 4.5 },
-];
+import { useNavigate, useLocation } from 'react-router-dom';
+import { 
+    ArrowLeft, Activity, Calendar, ShieldAlert, TrendingUp, 
+    Camera, Share2, FileText 
+} from 'lucide-react';
 
 export default function Dashboard() {
+    const navigate = useNavigate();
     const location = useLocation();
-    const state = location.state as { latestResult?: AnalysisResponse } | null;
-    const latestResult = state?.latestResult;
-
-    // Defaults if no real scan happened yet
-    const patientSummary = latestResult?.patient_summary ?? "Healing trajectory indicates positive granulation. Continue current protocol.";
-    const area = latestResult?.metrics.area_cm2 ?? 4.5;
-    const slough = latestResult?.tissue_analysis.slough_pct ?? 15;
-    const doctorNote = latestResult?.doctor_note || "**No recent clinical notes available.**";
-
-    // Animation Variants
-    const container = {
-        hidden: { opacity: 0 },
-        show: {
-            opacity: 1,
-            transition: {
-                staggerChildren: 0.1
-            }
-        }
+    const data = location.state?.analysisData || {
+        analysis_date: "2024-03-05",
+        metrics: {
+            area_cm2: 12.4,
+            percent_reduction: 15,
+            healing_status: "Progressing",
+            velocity_cm2_week: 0.8
+        },
+        healing_score: 85,
+        healing_grade: "B+",
+        patient_summary: "The wound shows healthy granulation tissue and significant reduction in exudate levels.",
+        score_explanation: [
+            "15% surface area reduction in 7 days",
+            "Pink granulation tissue covering 80%",
+            "Minimal signs of periwound inflammation",
+            "Optimal moisture balance achieved"
+        ],
+        tissue_analysis: {
+            risk_level: "Low"
+        },
+        mask_url: null
     };
 
-    const item = {
-        hidden: { y: 20, opacity: 0 },
-        show: { y: 0, opacity: 1 }
-    };
+    if (!data) return null;
 
     return (
-        <div className="min-h-screen bg-aurora-subtle text-foreground pb-12 dark relative overflow-x-hidden">
+        <div className="min-h-screen bg-aurora-deep text-foreground font-sans relative overflow-x-hidden">
+            {/* Background Texture & Mesh */}
+            <div className="absolute inset-0 z-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20 filter brightness-100 contrast-150 mix-blend-overlay fixed"></div>
+            <div className="absolute inset-0 z-0 bg-mesh pointer-events-none"></div>
 
-            {/* Noise Texture */}
-            <div className="absolute inset-0 z-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20 brightness-100 contrast-150 mix-blend-overlay pointer-events-none fixed"></div>
-
-            {/* Header / Nav */}
-            <div className="sticky top-0 z-30 flex items-center justify-between px-6 py-4 bg-glass-dark/80 backdrop-blur-xl border-b border-white/5">
-                <Link to="/" className="flex items-center gap-2 text-slate-400 hover:text-white transition-colors">
-                    <ArrowLeft size={20} />
-                    <span className="text-sm font-medium tracking-wide">BACK TO HOME</span>
-                </Link>
-                <div className="flex items-center gap-4">
-                    <span className="text-sm text-slate-500 font-mono hidden md:block">ID: P-9082-AX</span>
-                    <div className="h-8 w-8 rounded-full bg-gradient-to-tr from-primary to-blue-500 shadow-[0_0_10px_rgba(34,211,238,0.5)]"></div>
+            {/* Top Navigation Bar */}
+            <div className="relative z-20 flex items-center justify-between px-8 py-6 border-b border-white/5 bg-black/20 backdrop-blur-xl">
+                <button
+                    onClick={() => navigate('/')}
+                    className="flex items-center gap-2 text-slate-400 hover:text-white transition-all group"
+                >
+                    <ArrowLeft className="h-5 w-5 group-hover:-translate-x-1 transition-transform" />
+                    <span className="text-xs uppercase tracking-widest font-bold">Back to Fleet</span>
+                </button>
+                <div className="flex items-center gap-6">
+                    <div className="hidden md:flex flex-col items-end">
+                        <span className="text-[10px] text-slate-500 uppercase tracking-[0.3em] font-black">System Status</span>
+                        <span className="text-xs text-primary font-mono tracking-widest flex items-center gap-2">
+                            <span className="h-2 w-2 rounded-full bg-primary animate-pulse"></span>
+                            OPERATIONAL
+                        </span>
+                    </div>
                 </div>
             </div>
 
             <motion.div
-                variants={container}
-                initial="hidden"
-                animate="show"
-                className="relative z-10 p-6 max-w-7xl mx-auto space-y-8"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                className="relative z-10 max-w-7xl mx-auto p-6 md:p-10 space-y-8"
             >
-
-                {/* 1. Hero Summary Card */}
-                <motion.div variants={item} className="relative overflow-hidden rounded-[2rem] bg-glass-dark p-8 border border-white/5 hover:border-white/10 transition-colors">
-                    <div className="absolute top-0 right-0 h-96 w-96 bg-primary/10 blur-[100px] rounded-full mix-blend-screen pointer-events-none"></div>
-
-                    <div className="relative z-10 grid gap-8 md:grid-cols-2 lg:grid-cols-3 items-center">
-                        {/* Status Message */}
-                        <div className="lg:col-span-2 space-y-4">
-                            <div className="flex items-center gap-3">
-                                <div className="rounded-full bg-green-500/10 p-2 text-green-400 border border-green-500/20 shadow-[0_0_10px_rgba(74,222,128,0.2)]">
-                                    <CheckCircle className="h-6 w-6" />
-                                </div>
-                                <h2 className="text-3xl font-light text-white tracking-wide">Optimal Recovery</h2>
-                            </div>
-                            <p className="text-xl text-slate-400 leading-relaxed max-w-2xl font-light">
-                                "{patientSummary}"
-                            </p>
-                        </div>
-
-                        {/* Quick Stats */}
-                        <div className="grid grid-cols-2 gap-4">
-                            <div className="rounded-2xl bg-black/20 p-5 border border-white/5 backdrop-blur-md text-center group hover:bg-white/5 transition-colors">
-                                <p className="text-xs font-bold text-primary uppercase tracking-widest mb-2">Surface Area</p>
-                                <p className="text-4xl font-light text-white tracking-tighter">{area}<span className="text-sm font-normal text-slate-500 ml-1">cm²</span></p>
-                            </div>
-                            <div className="rounded-2xl bg-black/20 p-5 border border-white/5 backdrop-blur-md text-center group hover:bg-white/5 transition-colors">
-                                <p className="text-xs font-bold text-purple-400 uppercase tracking-widest mb-2">Granulation</p>
-                                <p className="text-4xl font-light text-white tracking-tighter">{100 - slough}<span className="text-sm font-normal text-slate-500 ml-1">%</span></p>
-                            </div>
-                        </div>
+                {/* Header Section */}
+                <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
+                    <div className="space-y-2">
+                        <motion.div
+                            initial={{ x: -20, opacity: 0 }}
+                            animate={{ x: 0, opacity: 1 }}
+                            className="flex items-center gap-3 text-primary"
+                        >
+                            <Calendar className="h-4 w-4" />
+                            <span className="text-xs font-bold uppercase tracking-[0.4em]">{data.analysis_date}</span>
+                        </motion.div>
+                        <h1 className="text-5xl md:text-6xl font-light text-white tracking-tighter">
+                            Analysis <span className="font-bold text-gradient">Report</span>
+                        </h1>
                     </div>
-                </motion.div>
-
-                <div className="grid lg:grid-cols-3 gap-8">
-                    {/* 2. Trajectory Graph */}
-                    <motion.div variants={item} className="lg:col-span-2 rounded-[2rem] bg-glass-dark border border-white/5 p-8 shadow-2xl relative overflow-hidden">
-                        {/* Decorative Grid items */}
-                        <div className="absolute inset-0 z-0 opacity-[0.03]" style={{ backgroundImage: 'radial-gradient(circle, #fff 1px, transparent 1px)', backgroundSize: '20px 20px' }}></div>
-
-                        <div className="relative z-10 flex items-center justify-between mb-8">
-                            <div className="flex items-center gap-2">
-                                <Activity className="h-5 w-5 text-primary" />
-                                <h3 className="font-medium text-lg text-white">Healing Velocity</h3>
-                            </div>
-                            <div className="flex gap-2">
-                                <span className="px-4 py-1.5 rounded-full bg-white/5 text-xs font-medium border border-white/10 text-white">Total Area</span>
-                                <span className="px-4 py-1.5 rounded-full bg-transparent text-xs font-medium text-slate-500 hover:text-slate-300 cursor-pointer transition-colors">Tissue Health</span>
-                            </div>
-                        </div>
-
-                        <div className="h-[300px] w-full relative z-10">
-                            <ResponsiveContainer width="100%" height="100%">
-                                <AreaChart data={MOCK_HISTORY}>
-                                    <defs>
-                                        <linearGradient id="colorArea" x1="0" y1="0" x2="0" y2="1">
-                                            <stop offset="5%" stopColor="#22d3ee" stopOpacity={0.3} />
-                                            <stop offset="95%" stopColor="#22d3ee" stopOpacity={0} />
-                                        </linearGradient>
-                                    </defs>
-                                    <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#334155" opacity={0.2} />
-                                    <XAxis dataKey="date" axisLine={false} tickLine={false} tick={{ fill: '#64748b', fontSize: 12 }} dy={10} />
-                                    <YAxis axisLine={false} tickLine={false} tick={{ fill: '#64748b', fontSize: 12 }} />
-                                    <Tooltip
-                                        contentStyle={{ backgroundColor: '#020617', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.1)', boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.5)' }}
-                                        itemStyle={{ color: '#e2e8f0' }}
-                                        cursor={{ stroke: 'rgba(255,255,255,0.2)', strokeWidth: 1, strokeDasharray: '4 4' }}
-                                    />
-                                    <Area
-                                        type="monotone"
-                                        dataKey="area"
-                                        stroke="#22d3ee"
-                                        strokeWidth={3}
-                                        fillOpacity={1}
-                                        fill="url(#colorArea)"
-                                        activeDot={{ r: 6, strokeWidth: 0, fill: "#fff" }}
-                                    />
-                                </AreaChart>
-                            </ResponsiveContainer>
-                        </div>
-                    </motion.div>
-
-                    {/* 3. Protocol Tasks */}
-                    <motion.div variants={item} className="rounded-[2rem] bg-glass-dark border border-white/5 p-8 relative">
-                        <div className="flex items-center gap-2 mb-6">
-                            <Calendar className="h-5 w-5 text-accent" />
-                            <h3 className="font-medium text-lg text-white">Care Protocol</h3>
-                        </div>
-                        <div className="space-y-4">
-                            {[
-                                { task: 'Saline Cleanse', time: '08:00 AM', status: 'done' },
-                                { task: 'Dressing Change', time: '08:30 AM', status: 'pending' },
-                                { task: 'Antibiotic Ointment', time: '08:35 AM', status: 'pending' },
-                                { task: 'Evening Check', time: '08:00 PM', status: 'locked' }
-                            ].map((item, i) => (
-                                <div key={i} className="group flex items-center justify-between p-4 rounded-xl bg-white/5 border border-white/5 hover:bg-white/10 hover:border-primary/30 transition-all cursor-pointer">
-                                    <div className="flex items-center gap-3">
-                                        <div className={`h-2 w-2 rounded-full ${item.status === 'done' ? 'bg-green-400 shadow-[0_0_8px_rgba(74,222,128,0.5)]' : item.status === 'pending' ? 'bg-primary shadow-[0_0_8px_rgba(34,211,238,0.5)]' : 'bg-slate-600'}`}></div>
-                                        <span className={`text-sm font-medium ${item.status === 'locked' ? 'text-slate-500' : 'text-slate-200'}`}>{item.task}</span>
-                                    </div>
-                                    <span className="text-xs text-slate-500 font-mono">{item.time}</span>
-                                </div>
-                            ))}
-                        </div>
-                    </motion.div>
-                </div>
-
-                {/* 4. AI Clinical Note */}
-                <motion.div variants={item} className="rounded-[2rem] bg-glass-dark border border-white/5 p-8 relative overflow-hidden">
-                    <div className="absolute top-0 right-0 p-24 bg-purple-500/5 blur-[80px] rounded-full pointer-events-none"></div>
-
-                    {/* Header */}
-                    <div className="flex items-center justify-between mb-6 relative z-10">
-                        <div className="flex items-center gap-2">
-                            <FileText className="h-5 w-5 text-purple-400" />
-                            <h3 className="font-medium text-lg text-white">Clinical Assessment</h3>
-                        </div>
-                        <button className="flex items-center gap-2 px-4 py-2 rounded-lg bg-white/5 hover:bg-white/10 text-xs font-medium text-slate-300 transition-colors border border-white/5">
-                            <Share2 size={14} />
-                            Share Report
+                    <div className="flex gap-3">
+                        <button className="px-6 py-3 rounded-2xl bg-primary text-black font-bold text-xs uppercase tracking-widest hover:scale-105 active:scale-95 transition-all shadow-[0_0_20px_rgba(6,182,212,0.3)]">
+                            Finalize Report
                         </button>
                     </div>
+                </div>
 
-                    <div className="relative z-10 flex flex-col md:flex-row gap-8">
-                        {/* Main Report Content */}
-                        <div className="flex-1">
-                            <div className="prose prose-invert prose-sm max-w-none font-light leading-relaxed text-slate-300 bg-black/20 p-6 rounded-2xl border border-white/5">
-                                <ReactMarkdown>{doctorNote}</ReactMarkdown>
-                            </div>
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                    {/* Left Column: Metrics Grid */}
+                    <div className="lg:col-span-2 space-y-8">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            {/* Area Metric */}
+                            <motion.div
+                                whileHover={{ y: -5 }}
+                                className="glass-dark rounded-[2.5rem] p-8 space-y-6 relative group overflow-hidden"
+                            >
+                                <div className="absolute top-0 right-0 p-16 bg-primary/10 blur-[60px] group-hover:bg-primary/20 transition-colors"></div>
+                                <div className="flex justify-between items-start">
+                                    <div className="p-3 rounded-2xl bg-primary/10 text-primary border border-primary/20">
+                                        <Activity className="h-6 w-6" />
+                                    </div>
+                                    <span className="text-xs font-bold text-green-400 bg-green-900/30 px-3 py-1 rounded-full border border-green-500/30">
+                                        -{data.metrics.percent_reduction}%
+                                    </span>
+                                </div>
+                                <div>
+                                    <h4 className="text-xs font-bold text-slate-500 uppercase tracking-widest mb-1">Surface Metrics</h4>
+                                    <div className="flex items-baseline gap-2">
+                                        <span className="text-6xl font-light text-white">{data.metrics.area_cm2}</span>
+                                        <span className="text-xl text-slate-500 font-medium">cm²</span>
+                                    </div>
+                                </div>
+                            </motion.div>
+
+                            {/* Velocity Metric */}
+                            <motion.div
+                                whileHover={{ y: -5 }}
+                                className="glass-dark rounded-[2.5rem] p-8 space-y-6 relative group overflow-hidden"
+                            >
+                                <div className="absolute top-0 right-0 p-16 bg-accent/10 blur-[60px] group-hover:bg-accent/20 transition-colors"></div>
+                                <div className="flex justify-between items-start">
+                                    <div className="p-3 rounded-2xl bg-accent/10 text-accent border border-accent/20">
+                                        <TrendingUp className="h-6 w-6" />
+                                    </div>
+                                    <span className="text-xs font-bold text-accent/80 uppercase tracking-widest">{data.metrics.healing_status}</span>
+                                </div>
+                                <div>
+                                    <h4 className="text-xs font-bold text-slate-500 uppercase tracking-widest mb-1">Healing Velocity</h4>
+                                    <div className="flex items-baseline gap-2">
+                                        <span className="text-6xl font-light text-white">{data.metrics.velocity_cm2_week}</span>
+                                        <span className="text-xl text-slate-500 font-medium">cm²/wk</span>
+                                    </div>
+                                </div>
+                            </motion.div>
                         </div>
 
-                        {/* Sidebar: Model Stats */}
-                        <div className="w-full md:w-72 shrink-0 flex flex-col gap-6 md:border-l border-white/10 md:pl-8">
-                            <div className="space-y-2">
-                                <h4 className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Model Architecture</h4>
-                                <div className="flex flex-wrap gap-2">
-                                    <span className="px-2 py-1 rounded bg-white/5 border border-white/10 text-[10px] text-cyan-300">EfficientNet-B4</span>
-                                    <span className="px-2 py-1 rounded bg-white/5 border border-white/10 text-[10px] text-purple-300">Mask-RCNN</span>
-                                    <span className="px-2 py-1 rounded bg-white/5 border border-white/10 text-[10px] text-indigo-300">LLaMA-3-Medical</span>
+                        {/* Large Healing Score Segment */}
+                        <motion.div
+                            whileHover={{ scale: 1.01 }}
+                            className="glass-dark rounded-[3rem] p-10 border border-white/5 relative overflow-hidden group shadow-2xl"
+                        >
+                            <div className="flex flex-col md:flex-row gap-10 items-center">
+                                <div className="relative w-48 h-48 flex items-center justify-center">
+                                    <svg className="w-full h-full -rotate-90">
+                                        <circle
+                                            cx="96" cy="96" r="88"
+                                            fill="none" stroke="currentColor"
+                                            strokeWidth="8" className="text-white/5"
+                                        />
+                                        <motion.circle
+                                            cx="96" cy="96" r="88"
+                                            fill="none" stroke="currentColor"
+                                            strokeWidth="8" strokeDasharray="552.92"
+                                            initial={{ strokeDashoffset: 552.92 }}
+                                            animate={{ strokeDashoffset: 552.92 * (1 - data.healing_score / 100) }}
+                                            transition={{ duration: 1.5, ease: "easeOut" }}
+                                            className="text-primary"
+                                            strokeLinecap="round"
+                                        />
+                                    </svg>
+                                    <div className="absolute flex flex-col items-center">
+                                        <span className="text-5xl font-black text-white">{data.healing_score}</span>
+                                        <span className="text-[10px] font-black text-primary uppercase tracking-[0.3em]">Score</span>
+                                    </div>
+                                </div>
+                                <div className="flex-1 space-y-6">
+                                    <div className="space-y-1">
+                                        <h3 className="text-3xl font-bold text-white tracking-tight">Healing Grade: {data.healing_grade}</h3>
+                                        <p className="text-slate-400 text-sm leading-relaxed">{data.patient_summary}</p>
+                                    </div>
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                        {data.score_explanation.map((item: string, i: number) => (
+                                            <div key={i} className="flex items-start gap-2">
+                                                <div className="h-5 w-5 rounded-full bg-green-500/20 text-green-400 flex items-center justify-center shrink-0 mt-0.5">
+                                                    <div className="h-1.5 w-1.5 rounded-full bg-current"></div>
+                                                </div>
+                                                <span className="text-xs text-slate-300">{item}</span>
+                                            </div>
+                                        ))}
+                                    </div>
                                 </div>
                             </div>
-
-                            <div className="space-y-2">
-                                <h4 className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Confidence Score</h4>
-                                <div className="flex items-end gap-2">
-                                    <span className="text-4xl font-light text-green-400">98.4</span>
-                                    <span className="text-sm font-bold text-green-500/50 mb-1">%</span>
-                                </div>
-                            </div>
-
-                            <div className="pt-6 mt-auto border-t border-white/10 flex gap-2">
-                                <button
-                                    aria-label="Share Analysis"
-                                    className="flex-1 py-2 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 flex items-center justify-center gap-2 transition-colors"
-                                >
-                                    <Share2 className="h-4 w-4 text-slate-400" />
-                                </button>
-                                <button
-                                    aria-label="Download PDF Report"
-                                    className="flex-1 py-2 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 flex items-center justify-center gap-2 transition-colors"
-                                >
-                                    <FileText className="h-4 w-4 text-slate-400" />
-                                    <span className="text-xs font-bold text-slate-400">PDF</span>
-                                </button>
-                            </div>
-                        </div>
+                        </motion.div>
                     </div>
-                </motion.div>
+
+                    {/* Right Column: Visualizer + Actions */}
+                    <div className="space-y-8">
+                        <motion.div
+                            whileHover={{ y: -5 }}
+                            className="glass-dark rounded-[3rem] overflow-hidden flex flex-col border border-white/5 shadow-2xl"
+                        >
+                            <div className="p-8 border-b border-white/5 bg-white/5">
+                                <h3 className="text-sm font-bold text-white uppercase tracking-widest flex items-center gap-2">
+                                    <ShieldAlert className="h-4 w-4 text-primary" />
+                                    Tissue Segmentation
+                                </h3>
+                            </div>
+                            <div className="aspect-square bg-slate-900 relative">
+                                {data.mask_url ? (
+                                    <img src={data.mask_url} alt="Wound Mask" className="w-full h-full object-cover" />
+                                ) : (
+                                    <div className="w-full h-full flex items-center justify-center p-12 bg-aurora-subtle">
+                                        <div className="w-full h-full rounded-2xl border-2 border-dashed border-primary/20 flex flex-col items-center justify-center gap-4 text-primary/40">
+                                            <Camera className="h-12 w-12" />
+                                            <span className="text-[10px] font-bold uppercase tracking-[0.2em]">Visual Data Pending</span>
+                                        </div>
+                                    </div>
+                                )}
+                                {/* HUD Overlay in corner */}
+                                <div className="absolute bottom-4 left-4 p-3 bg-black/60 backdrop-blur-md rounded-2xl border border-white/10 space-y-1">
+                                    <h4 className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Confidence Score</h4>
+                                    <div className="flex items-end gap-2">
+                                        <span className="text-4xl font-light text-green-400">98.4</span>
+                                        <span className="text-sm font-bold text-green-500/50 mb-1">%</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div className="p-8 space-y-6">
+                                <div className="space-y-4">
+                                    <div className="flex justify-between items-center text-[10px] font-black uppercase tracking-widest">
+                                        <span className="text-slate-500">Risk Assessment</span>
+                                        <span className={data.tissue_analysis.risk_level === 'High' ? 'text-red-400' : 'text-green-400'}>
+                                            {data.tissue_analysis.risk_level} Risk
+                                        </span>
+                                    </div>
+                                    <div className="flex gap-2">
+                                        <button
+                                            aria-label="Share Analysis"
+                                            className="flex-1 py-4 rounded-2xl bg-white/5 hover:bg-white/10 border border-white/5 flex items-center justify-center transition-all group"
+                                        >
+                                            <Share2 className="h-5 w-5 text-slate-400 group-hover:text-primary transition-colors" />
+                                        </button>
+                                        <button
+                                            aria-label="Download PDF Report"
+                                            className="flex-[2] py-4 rounded-2xl bg-white/5 hover:bg-white/10 border border-white/5 flex items-center justify-center gap-3 transition-all group"
+                                        >
+                                            <FileText className="h-5 w-5 text-slate-400 group-hover:text-primary transition-colors" />
+                                            <span className="text-xs font-bold text-slate-400 group-hover:text-white uppercase tracking-widest">Generate PDF</span>
+                                        </button>
+                                    </div>
+                                </div>
+                                <p className="text-[10px] text-center text-slate-500 uppercase tracking-[0.2em] italic font-medium leading-relaxed">
+                                    AI generated analysis. Confirmed by WoundSense v4.2.0
+                                </p>
+                            </div>
+                        </motion.div>
+                    </div>
+                </div>
             </motion.div>
         </div>
     );
