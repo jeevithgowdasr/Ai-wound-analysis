@@ -1,0 +1,132 @@
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@100;300;400;500;600;700;800;900&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    /* Premium "Medical Future" Light Mode */
+    --background: 210 40% 98%;
+    --foreground: 222 47% 11%;
+    --card: 0 0% 100%;
+    --card-foreground: 222 47% 11%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 222 47% 11%;
+
+    --primary: 190 100% 50%;
+    /* Cyan Neon */
+    --primary-foreground: 222.2 47.4% 11.2%;
+
+    --secondary: 210 40% 96.1%;
+    --secondary-foreground: 222.2 47.4% 11.2%;
+
+    --muted: 210 40% 96.1%;
+    --muted-foreground: 215.4 16.3% 46.9%;
+
+    --accent: 210 40% 90%;
+    --accent-foreground: 222.2 47.4% 11.2%;
+
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 210 40% 98%;
+
+    --border: 214.3 31.8% 91.4%;
+    --input: 214.3 31.8% 91.4%;
+    --ring: 190 100% 50%;
+    --radius: 1rem;
+  }
+
+  .dark {
+    /* "WoundSense" Premium Dark Mode */
+    --background: 240 10% 4%;
+    /* Deepest Black/Blue #0a0a0d */
+    --foreground: 210 20% 98%;
+
+    --card: 240 10% 7%;
+    /* Slightly lighter than bg */
+    --card-foreground: 210 20% 98%;
+
+    --popover: 240 10% 7%;
+    --popover-foreground: 210 20% 98%;
+
+    --primary: 180 100% 50%;
+    /* Electric Cyan */
+    --primary-foreground: 240 10% 3.9%;
+
+    --secondary: 260 20% 15%;
+    /* Deep Purple Tint */
+    --secondary-foreground: 210 20% 98%;
+
+    --muted: 240 10% 10%;
+    --muted-foreground: 240 5% 65%;
+
+    --accent: 260 50% 50%;
+    --accent-foreground: 210 20% 98%;
+
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 210 20% 98%;
+
+    --border: 240 10% 12%;
+    --input: 240 10% 12%;
+    --ring: 180 100% 50%;
+  }
+}
+
+@layer base {
+  * {
+    border-color: hsl(var(--border));
+  }
+
+  body {
+    background-color: hsl(var(--background));
+    color: hsl(var(--foreground));
+    font-family: 'Outfit', sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  ::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: hsl(var(--muted-foreground) / 0.2);
+    border-radius: 10px;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: hsl(var(--muted-foreground) / 0.4);
+  }
+}
+
+/* Global Utilities */
+.glass {
+  background: rgba(255, 255, 255, 0.03);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.glass-dark {
+  background: rgba(15, 15, 20, 0.5);
+  /* Deep tint */
+  backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+}
+
+.text-gradient {
+  background: linear-gradient(to right, #22d3ee 0%, #818cf8 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* New Deep Aurora Background */
+.bg-aurora-deep {
+  background: radial-gradient(circle at 0% 0%, #1e1b4b 0%, transparent 50%),
+    radial-gradient(circle at 100% 100%, #172554 0%, transparent 50%),
+    #02040a;
+}

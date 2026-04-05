@@ -1,0 +1,51 @@
+
+.
+├── data/
+│   ├── raw/                        # Original images and annotation JSONs
+│   ├── processed/                  # Preprocessed tensors ready for training
+│   ├── splits/                     # train.csv, val.csv, test.csv
+│   └── external/                   # Public medical datasets
+├── notebooks/
+│   ├── 01_data_exploration.ipynb
+│   ├── 02_preprocessing_verify.ipynb
+│   └── 03_model_prototyping.ipynb
+├── src/
+│   ├── preprocessing/              # Data cleaning and augmentation pipelines
+│   │   ├── transforms.py
+│   │   └── reference_marker.py     # Heuristic detection of coin/marker
+│   ├── training/                   # Training loops and experiment tracking
+│   │   ├── train.py
+│   │   ├── loss.py                 # DiceLoss, IoULoss
+│   │   └── metrics.py
+│   ├── models/                     # Model architectures
+│   │   ├── unet.py
+│   │   └── backbones.py
+│   ├── inference/                  # Production inference code
+│   │   ├── predictor.py            # Latency-optimized inference class
+│   │   └── postprocess.py          # Convert binary mask to cm²
+│   └── explainability/             # Interpretation tools
+│       └── gradcam.py              # Visualizing model focus areas
+├── backend/                        # FastAPI Service
+│   ├── app/
+│   │   ├── api.py                  # Endpoints
+│   │   └── schemas.py              # Pydantic models
+│   ├── Dockerfile
+│   └── requirements.txt
+├── frontend/                       # React/Vite Application
+│   ├── public/
+│   ├── src/
+│   │   ├── components/
+│   │   │   ├── CameraCapture.tsx   # Guided capture UI
+│   │   │   └── ResultOverlay.tsx   # Mask visualization
+│   │   ├── hooks/
+│   │   └── services/
+│   ├── Dockerfile
+│   └── package.json
+├── docs/                           # Documentation
+│   ├── api_spec.yaml
+│   ├── deployment.md
+│   └── user_guide.md
+├── tests/                          # Unit and Integration tests
+├── .gitignore
+├── docker-compose.yml
+└── README.md
